@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:util="http://www.springframework.org/schema/util" 
+	xsi:schemaLocation="
+            http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/aop
+            http://www.springframework.org/schema/aop/spring-aop.xsd
+            http://www.springframework.org/schema/tx
+            http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+            http://www.springframework.org/schema/jdbc
+            http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd
+            http://www.springframework.org/schema/util 
+            http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+
+	<context:component-scan base-package="com.my.iud">
+	   <context:exclude-filter type="regex" expression="com.my.iud.web.controller"/>
+	   <context:exclude-filter type="regex" expression="com.my.iud.entity"/>
+	</context:component-scan>
+
+	<context:annotation-config />
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+     
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations" value="classpath:${config.url}" />
+	</bean>
+	
+    <util:properties id="setting" location="classpath:${config.url}" />  
+
+	<!-- guzzframework -->
+ 
+	<bean id="guzzContext" class="org.guzz.web.context.spring.GuzzContextBeanFactory"
+		factory-method="createGuzzContext">
+		<constructor-arg>
+			<value>classpath:guzz.xml</value>
+		</constructor-arg>
+	</bean>
+
+	<bean id="transactionManager" class="org.guzz.web.context.spring.GuzzTransactionManager">
+		<property name="guzzContext" ref="guzzContext" />
+	</bean>
+
+	<bean id="taoBaoClient" class="com.taobao.api.DefaultTaobaoClient">
+		<constructor-arg value="${taobao.url}"/>
+		<constructor-arg value="${develop.taobao.appkey}"/>
+		<constructor-arg value="${develop.taobao.appsecret}"/>
+	</bean>
+
+	<bean id="taskInit" class="com.my.iud.task.TaskInit" init-method="init">
+	     <property name="runThreads" value="${runThreads}"></property>
+	</bean>	
+	
+	<bean id="gtaskInit" class="com.my.iud.task.gallery.GalleryTaskInit" init-method="init">
+	     <property name="runThreads" value="${runThreads}"></property>
+	</bean>			
+	
+</beans>

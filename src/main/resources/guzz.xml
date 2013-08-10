@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE guzz-configs PUBLIC "-//GUZZ//DTD MAIN CONFIG//EN" "http://www.guzz.org/dtd/guzz.dtd">
+
+<guzz-configs>
+
+	<dialect name="mysql5Dialect" class="org.guzz.dialect.Mysql5Dialect" />
+
+	<tran locator="spring">
+           <dbgroup name="iud" dialectName="mysql5Dialect" masterDBConfigName="iud" />
+    </tran>
+
+	<config-server>
+		<server class="org.guzz.config.LocalFileConfigServer">
+			<param name="resource" value="classpath:${fms.url}" />
+		</server>
+	</config-server>
+	
+	<business-scan resources="classpath*:/com/my/iud/entity/*.class" />
+	
+</guzz-configs>
