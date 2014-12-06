@@ -27,11 +27,20 @@ public class GalleryTaskRecursive extends RecursiveAction {
 	private List<Gtask> taskList = new ArrayList<>();
 
 	private ApplicationContext applicationContext;
+	
+	private int from, to;
 
 	public GalleryTaskRecursive(List<Gtask> taskList,
 			ApplicationContext applicationContext) {
 		this.taskList = taskList;
 		this.applicationContext = applicationContext;
+	}
+
+	public GalleryTaskRecursive(List<Gtask> taskList,
+			ApplicationContext applicationContext, int from, int to) {
+		this(taskList, applicationContext);
+		this.from = from;
+		this.to = to;
 	}
 
 	@Override
@@ -43,10 +52,11 @@ public class GalleryTaskRecursive extends RecursiveAction {
 				.getBean("userService");
 		TaskService taskService = (TaskService) applicationContext
 				.getBean("taskService");
-		if (taskList.size() <= 5) {
+		if (to - from <= 5) {
 			ItemFormBean itemFormBean = new ItemFormBean();
 
-			for (Gtask task : taskList) {
+			for(int i = from; i<to; i++)
+				Gtask task = taskList.get(i);
 				
 				long taskId = task.getId();
 				int kind = task.getKind();
@@ -114,11 +124,9 @@ public class GalleryTaskRecursive extends RecursiveAction {
 			}
 			return;
 		} else {
-			List<Gtask> leftTaskList = taskList.subList(0, taskList.size() / 2);
-			List<Gtask> rightTaskList = taskList.subList(taskList.size() / 2,
-					taskList.size());
-			invokeAll(new GalleryTaskRecursive(leftTaskList, applicationContext),
-					new GalleryTaskRecursive(rightTaskList, applicationContext));
+			int split = (from + to) /2;
+			invokeAll(new GalleryTaskRecursive(leftTaskList, applicationContext, from, split),
+					new GalleryTaskRecursive(rightTaskList, applicationContext, from + split, to));
 		}
 
 	}
